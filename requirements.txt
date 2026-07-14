@@ -1,0 +1,15 @@
+# API
+fastapi>=0.115.0,<1.0.0
+uvicorn[standard]>=0.30.0,<1.0.0
+pydantic>=2.7.0,<3.0.0
+
+# Data pipeline & search
+numpy>=2.0.0,<3.0.0
+nltk>=3.9.0,<4.0.0
+requests>=2.32.0,<3.0.0
+beautifulsoup4>=4.12.0,<5.0.0
+python-dotenv>=1.0.0,<2.0.0
+
+# Optional: vector / semantic indexing (quadrant_updater.py)
+qdrant-client>=1.9.0,<2.0.0
+sentence-transformers>=3.0.0,<6.0.0

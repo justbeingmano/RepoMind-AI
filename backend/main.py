@@ -1,0 +1,69 @@
+import logging
+import os
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from backend.api.search import router as search_router
+from backend.api.recommend import router as recommend_router
+from backend.api.repos import router as repos_router
+from backend.api.profile import router as profile_router
+from backend.api.advisor import router as advisor_router
+from backend.api.project_explainer import router as project_explainer_router
+
+logging.basicConfig(level=logging.INFO)
+
+_DEBUG = os.getenv("DEBUG", "true").lower() in ("1", "true", "yes")
+_DEFAULT_CORS = (
+    "http://localhost:5173,"
+    "http://127.0.0.1:5173,"
+    "http://localhost:3000,"
+    "http://127.0.0.1:3000"
+)
+_CORS_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("CORS_ORIGINS", _DEFAULT_CORS).split(",")
+    if origin.strip()
+]
+
+app = FastAPI(
+    title="Open-Source Project Search Engine API",
+    description="Hybrid BM25 + semantic search backend for GitHub repository discovery.",
+    version="1.0.0",
+    docs_url="/docs" if _DEBUG else None,
+    redoc_url="/redoc" if _DEBUG else None,
+    openapi_url="/openapi.json" if _DEBUG else None,
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/")
+def root():
+    return {
+        "message": "Open-Source Project Search Engine API",
+        "docs": "/docs" if _DEBUG else None,
+        "health": "/health",
+    }
+
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "ok",
+    }
+
+
+app.include_router(search_router)
+app.include_router(recommend_router)
+app.include_router(repos_router)
+app.include_router(profile_router)
+app.include_router(advisor_router)
+app.include_router(project_explainer_router)
